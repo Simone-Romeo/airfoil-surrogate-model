@@ -147,6 +147,6 @@ Background in helicopter flight simulation | Learning ML/AI for aerospace applic
 
 ## 👤 Author
 
-**[Your Name]** — MSc Space Engineering  
+**[Simone Romeo]** — MSc Space Engineering  
 Background in helicopter flight simulation | Learning ML/AI for aerospace applications  
 [LinkedIn](#) · [GitHub](#)
