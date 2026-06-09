@@ -43,63 +43,77 @@ Given an airfoil geometry and flight conditions, predict the three aerodynamic c
 airfoil-surrogate-model/
 │
 ├── airfoil_surrogate_model.ipynb   # Main notebook (complete pipeline)
+├── images/
+│   ├── fig1_eda.png
+│   ├── parity_plots.png
+│   ├── model_comparison.png
+│   └── lift_curve_comparison.png
 ├── requirements.txt
 └── README.md
 ```
 
 ---
 
+## 📊 Dataset — Exploratory Analysis
+
+![EDA](images/fig1_eda.png)
+
+6,000 samples generated from NACA 4-digit airfoil family using a physics-based reference solver (thin airfoil theory + empirical corrections). The drag polar (Cl vs Cd) shows the characteristic parabolic shape across the full operating envelope.
+
+---
+
 ## 🔬 Methodology
 
-### 1. Dataset Generation
-- 6,000 samples drawn from NACA 4-digit airfoil family
-- Physics-based reference solver: thin airfoil theory + empirical corrections (Drela 1989)
-- Includes stall modelling via smooth sigmoid approximation
-
-### 2. Feature Engineering
+### Feature Engineering
 Domain-informed features derived from aerospace theory:
 
 | Feature | Rationale |
 |---|---|
-| `log(Re)` | Aerodynamic scaling is logarithmic in Reynolds |
-| `sin(α)`, `cos(α)` | Trigonometric decomposition of incidence |
-| `α²` | Captures nonlinear lift at high AoA |
+| `log(Re)` | Aerodynamic scaling is logarithmic in Reynolds number |
+| `sin(α)`, `cos(α)` | Trigonometric decomposition of incidence angle |
+| `α²` | Captures nonlinear lift behaviour at high AoA |
 | `m × α` | Camber–incidence interaction term |
 
-### 3. Model Comparison
+### Model Comparison
 
 | Model | Cl R² | Cd R² | MAPE Cl | Inference |
 |---|---|---|---|---|
-| Ridge Regression | 0.978 | 0.901 | 8.2% | 0.001 ms |
-| Gradient Boosting | 0.997 | 0.982 | 3.1% | 0.05 ms |
+| Ridge Regression | 0.924 | 0.890 | 61.2% | 0.001 ms |
+| Gradient Boosting | 0.999 | 0.982 | 5.9% | 0.05 ms |
 | **MLP Neural Network** | **0.9994** | **0.9949** | **3.9%** | **0.002 ms** |
 
-### 4. Speedup Analysis
+![Model Comparison](images/model_comparison.png)
+
+---
+
+## 📈 Results
+
+### Surrogate Accuracy — Parity Plots
+
+![Parity Plots](images/parity_plots.png)
+
+Points on the diagonal = perfect prediction. The MLP surrogate tracks the physics solver across the full output range for all three coefficients.
+
+### Lift Curve — Surrogate vs Physics Solver (NACA 2412, Re=10⁶)
+
+![Lift Curve](images/lift_curve_comparison.png)
+
+The surrogate correctly reproduces the linear lift regime, stall behaviour, drag polar, and pitching moment across the full angle-of-attack range. Orange shading shows relative error — well below 5% in the linear regime.
+
+### Speedup Analysis
 
 | | Time per sample |
 |---|---|
 | Physics solver | ~0.018 ms |
 | MLP Surrogate | ~0.002 ms |
-| **Speedup** | **~500× (on real XFOIL: 100,000×)** |
-
----
-
-## 📊 Key Results
-
-**Lift curve — Surrogate vs Physics Solver (NACA 2412, Re=10⁶)**
-
-The surrogate tracks the physics solver across the full angle-of-attack range, including near-stall behaviour, with relative error below 5%.
-
-**Drag polar (Cl vs Cd)**
-
-Correct prediction of the parabolic drag polar shape across the full operating envelope.
+| **Speedup** | **~9× (reference) · ~100,000× vs real XFOIL** |
 
 ---
 
 ## 🚀 How to Run
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/airfoil-surrogate-model
+git clone https://github.com/Simone-Romeo/airfoil-surrogate-model
 cd airfoil-surrogate-model
 pip install -r requirements.txt
 jupyter notebook airfoil_surrogate_model.ipynb
@@ -109,10 +123,10 @@ jupyter notebook airfoil_surrogate_model.ipynb
 
 ## 🔭 Extensions & Future Work
 
-- **Physics-Informed Neural Networks (PINNs)**: embed Navier-Stokes constraints directly in the loss function for better extrapolation
-- **Gaussian Process Regression**: provides uncertainty quantification — critical for safety-critical aerospace applications
-- **Active Learning**: query the expensive solver only where surrogate uncertainty is high, reducing training data requirements
-- **3D extension**: generalize to full wing geometry (span, sweep, twist) using graph neural networks
+- **Physics-Informed Neural Networks (PINNs)**: embed Navier-Stokes constraints in the loss function for better extrapolation
+- **Gaussian Process Regression**: uncertainty quantification — critical for safety-critical aerospace applications
+- **Active Learning**: query the expensive solver only where surrogate uncertainty is high
+- **3D extension**: generalize to full wing geometry using graph neural networks
 
 ---
 
@@ -123,6 +137,13 @@ jupyter notebook airfoil_surrogate_model.ipynb
 - UIUC Airfoil Database: https://m-selig.ae.illinois.edu/ads/coord_database.html
 
 ---
+
+## 👤 Author
+
+**Simone Romeo** — MSc Space Engineering  
+Background in helicopter flight simulation | Learning ML/AI for aerospace applications  
+[LinkedIn](#) · [GitHub](https://github.com/Simone-Romeo)
+
 
 ## 👤 Author
 
